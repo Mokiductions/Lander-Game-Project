@@ -5,11 +5,13 @@
  */
 package Servlets;
 
-import db_models.Users;
-import db_services.GamesService;
 import db_services.UsersService;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import static javax.persistence.Persistence.createEntityManagerFactory;
@@ -17,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import utilities.MailSender;
 
 /**
  *
@@ -27,7 +30,13 @@ public class Register extends HttpServlet {
     private EntityManager em;
     private EntityManagerFactory emf;
     private UsersService us;
-    
+
+    // Variables para el envío del mail de activación
+    private MailSender sender;
+    private final String username = "lander.user.services@gmail.com";
+    private final String password = "Landergame1234";
+    private String activationLink;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -48,9 +57,13 @@ public class Register extends HttpServlet {
             us = new UsersService(em);
             String usr = request.getParameter("USR");
             String pwd = request.getParameter("PWD");
+            String mail = "ginesborrasm@gmail.com";
             if (!us.existsUser(usr)) {
                 us.addUser(usr, pwd);
                 answer = "1";
+                activationLink = "http://localhost:8080/LanderProject/activation.jsp?USR=" 
+                        + usr + "&PWD=" + pwd + "&ACT=activationCode";
+                sendActivationMail(usr, mail);
             } else {
                 answer = "0";
             }
@@ -59,6 +72,27 @@ public class Register extends HttpServlet {
             response.getWriter().print(answer);
         } finally {
             out.close();
+        }
+    }
+    
+    private void sendActivationMail(String usr, String destination) {
+        sender = new MailSender(username, password);
+        sender.setDestination(destination);
+        sender.setSubject("Confirmación de registro en Lander Game");
+        sender.setBody("¡Gracias por darse de alta en nuestro juego, " + usr +"!<br/><br/>"
+                + "Su registro ha sido llevado a cabo correctamente, tan sólo "
+                + "necesita activar su cuenta para comenzar a jugar.<br/><br/>"
+                + "Para activar su cuenta haga click <a href=\"" + activationLink
+                + "\" target=\"_blank\">aquí</a>.<br/><br/>Ojo no estrelles la nave... "
+                + "Y que la fuerza te acompañe.");
+        
+        try {
+            // Envía el correo
+            sender.send();
+        } catch (MessagingException ex) {
+            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

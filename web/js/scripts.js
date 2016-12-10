@@ -60,6 +60,7 @@ $(document).ready(function () {
             alert("Las dos contraseñas deben ser iguales para continuar con el registro.");
         } else {
             var dataString = "USR=" + capitalizeFirstLetter(usr) + "&PWD=" + pwd2;
+            $("#register-content").html("Registrando la cuenta... Por favor, espere.");
             $.ajax({
                 type: "POST",
                 url: "Register",

@@ -49,7 +49,6 @@ public class TopPlayedGames extends HttpServlet {
             emf = createEntityManagerFactory("LanderProjectPU");
             em = emf.createEntityManager();
             gs = new GamesService(em);
-            // Obtiene los datos de USR y PWD
             playedGames = gs.getMostPlayed();
             answer = "<ol>";
             for (Object[] playedGame : playedGames) {
