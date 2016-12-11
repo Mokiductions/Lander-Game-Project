@@ -6,12 +6,8 @@
 package Servlets;
 
 import db_models.Users;
-import db_services.GamesService;
+import db_services.UsersService;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import static javax.persistence.Persistence.createEntityManagerFactory;
@@ -24,12 +20,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author gines
  */
-public class LastActiveUsers extends HttpServlet {
+public class Activate extends HttpServlet {
 
     private EntityManager em;
     private EntityManagerFactory emf;
-    private GamesService gs;
-    private List<Object[]> games;
+    private UsersService us;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,30 +41,18 @@ public class LastActiveUsers extends HttpServlet {
         String answer;
         emf = createEntityManagerFactory("LanderProjectPU");
         em = emf.createEntityManager();
-        gs = new GamesService(em);
-        // Obtiene los datos de USR y PWD
-        games = gs.lastActiveUsers();
-        answer = "<table class=\"data-table\">";
-        answer += "<tr><th>Usuario</th><th>Hora últ. partida</th></tr>";
-        int i = 1;
-        for (Object[] game : games) {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            Users user = (Users) game[0];
-            Date time = (Date) game[1];
-            if (i % 2 == 0) {
-                answer += "<tr class=\"table-row-even\">";
-            } else {
-                answer += "<tr>";
-            }
-            //answer += "<td class=\"table-cell-number\">" + i + "</td>";
-            answer += "<td class=\"table-cell-user\">" + user.getUsr() + "</td>";
-            answer += "<td class=\"table-cell-data\">" + sdf.format(time) + "</td>";
-            answer += "</tr>";
-            i++;
+        us = new UsersService(em);
+        String usr = request.getParameter("USR");
+        String actCode = request.getParameter("ACT");
+        Users user = us.getUserByUsr(usr);
+        if (!user.getActive() && user.getActCode().equals(actCode)) {
+            us.activateUser(user);
+            answer = "1";
+        } else {
+            answer = "0";
         }
-        answer += "</table>";
         // Preparar respuesta para el JSP
-        response.setContentType("text/html");
+        response.setContentType("text/plain");
         response.getWriter().print(answer);
     }
 

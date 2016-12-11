@@ -28,7 +28,6 @@
                 </div>
                 <div id="activation-content" class="modal-body">
                     <div id="data"></div>
-                    <p>Activando la cuenta... Por favor, espere.</p>
                 </div>
                 <!--<div class="modal-footer">
                 </div>-->

@@ -52,14 +52,15 @@ $(document).ready(function () {
         var usr = document.getElementById('usr-input-reg').value;
         var pwd1 = document.getElementById('pwd-input-1').value;
         var pwd2 = document.getElementById('pwd-input-2').value;
-        if (usr === "" || pwd1 === "" || pwd2 === "") {
+        var mail = document.getElementById('mail-input-reg').value;
+        if (usr === "" || pwd1 === "" || pwd2 === "" || mail === "") {
             // El usuario no ha rellenado todos los campos
             alert("Debe rellenar los campos del formulario para continuar con el registro.");
         } else if (pwd1 !== pwd2) {
             // Las dos contraseñas no coinciden
             alert("Las dos contraseñas deben ser iguales para continuar con el registro.");
         } else {
-            var dataString = "USR=" + capitalizeFirstLetter(usr) + "&PWD=" + pwd2;
+            var dataString = "USR=" + capitalizeFirstLetter(usr) + "&PWD=" + pwd2 + "&MAIL=" + mail;
             $("#register-content").html("Registrando la cuenta... Por favor, espere.");
             $.ajax({
                 type: "POST",
@@ -68,20 +69,10 @@ $(document).ready(function () {
                 data: dataString,
                 success: function (response) {
                     if (response === "1") {
-                        var i = 5;
-                        $("#register-content").html("Registro realizado correctamente. " + i + "...");
                         //$("#register-close").css("display", "block");
-                        var int = setInterval(function (){ 
-                            i--;
-                            if (i === 0) {
-                                registerModalWindow.style.display = "none";
-                                location.reload();
-                                clearInterval(int);
-                            }
-                            $("#register-content").html("Registro realizado correctamente. " + i + "...");
-                        }, 700);
+                        $("#register-content").html("Registro realizado correctamente.\n\nLe ha sido enviado un correo con las instrucciones de activaci&oacute;n de su cuenta.");
                     } else {
-                        alert("Ha ocurrido un error");
+                        alert("Ha ocurrido un error durante el registro.");
                     }
                 }
             });
@@ -192,6 +183,8 @@ $(document).ready(function () {
                         loginModalWindow.style.display = "none";
                         document.getElementById('user-data-top-bar').innerHTML = "Bienvenido, " + capitalizeFirstLetter(usr) + "!";
                         $('#start').show();
+                    } else if (response === "2") {
+                        alert("La cuenta "  + capitalizeFirstLetter(usr) + " no ha sido activada todava.\n\nPor favor, revise su correo electronico.");
                     } else {
                         // El usuario no está dado de alta en la Base de datos
                         alert("El usuario " + capitalizeFirstLetter(usr) + " no esta dado de alta. ");

@@ -9,6 +9,8 @@ import db_models.Users;
 import db_services.GamesService;
 import db_services.LoginsService;
 import db_services.UsersService;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -34,20 +36,16 @@ public class Test {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        emf = createEntityManagerFactory("LanderProjectPU");
-        em = emf.createEntityManager();
-        ls = new LoginsService(em);
-        us = new UsersService(em);
-        gs = new GamesService(em);
-        emf = createEntityManagerFactory("LanderProjectPU");
-        em = emf.createEntityManager();
-        String usr = "superfake";
-        String pwd = "1234";
-        String hash = us.hashPassword(pwd);
-        us.addUser(usr, hash);
-        answer = usr + " " + hash;
-        System.out.println(answer);
-        validLogin("asd", pwd);
+        for (int i = 0; i < 50; i++) {
+            System.out.println(generateActCode());
+        }
+        
+    }
+    
+    private static String generateActCode() {
+        String code = "";
+        SecureRandom random = new SecureRandom();
+        return new BigInteger(130, random).toString(32);
     }
 
     private void addLoginInfo(String usr) {

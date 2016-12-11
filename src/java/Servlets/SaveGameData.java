@@ -7,10 +7,8 @@ package Servlets;
 
 import db_models.Users;
 import db_services.GamesService;
-import db_services.LoginsService;
 import db_services.UsersService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import static javax.persistence.Persistence.createEntityManagerFactory;
@@ -29,7 +27,7 @@ public class SaveGameData extends HttpServlet {
     private EntityManagerFactory emf;
     private UsersService us;
     private GamesService gs;
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -42,25 +40,20 @@ public class SaveGameData extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
         String answer;
-        try {
-            emf = createEntityManagerFactory("LanderProjectPU");
-            em = emf.createEntityManager();
-            gs = new GamesService(em);
-            us = new UsersService(em);
-            // Obtiene los datos de USR y PWD
-            String usr = request.getParameter("USR");
-            int score = Integer.parseInt(request.getParameter("SCORE"));
-            Users user = us.getUserByUsr(usr);
-            gs.addGame(user, score);
-            answer = "Usuario: " + usr + " - " + score;
-            // Preparar respuesta para el JSP
-            response.setContentType("text/plain");
-            response.getWriter().print(answer);
-        } finally {
-            out.close();
-        }
+        emf = createEntityManagerFactory("LanderProjectPU");
+        em = emf.createEntityManager();
+        gs = new GamesService(em);
+        us = new UsersService(em);
+        // Obtiene los datos de USR y PWD
+        String usr = request.getParameter("USR");
+        int score = Integer.parseInt(request.getParameter("SCORE"));
+        Users user = us.getUserByUsr(usr);
+        gs.addGame(user, score);
+        answer = "Usuario: " + usr + " - " + score;
+        // Preparar respuesta para el JSP
+        response.setContentType("text/plain");
+        response.getWriter().print(answer);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -67,7 +67,7 @@
                 <div class="modal-header-bottom">
                     <span id="login-title">Identifícate para continuar!</span>
                 </div>
-                <div class="modal-body">
+                <div id="login-content" class="modal-body">
                     <form id="login-form">
                         <label for="usr-input">Usuario:</label><br/>
                         <input type="text" id="usr-input" />
@@ -133,11 +133,13 @@
                 <div id="register-content" class="modal-body">
                     <form id="register-form">
                         <label for="usr-input">Usuario:</label><br/>
-                        <input type="text" id="usr-input-reg" /><hr/>
+                        <input type="text" id="usr-input-reg" required/><hr/>
+                        <label for="usr-input">Correo electrónico:</label><br/>
+                        <input type="text" id="mail-input-reg" required/><hr/>
                         <label for="pwd-input">Contraseña:</label><br/>
-                        <input type="password" id="pwd-input-1" /><br/>
+                        <input type="password" id="pwd-input-1" required/><br/>
                         <label for="pwd-input">Repita la contraseña:</label><br/>
-                        <input type="password" id="pwd-input-2" /><hr/>
+                        <input type="password" id="pwd-input-2" required/><hr/>
                         <input type="button" id="register-submit" value="Registrarse" />
                         <input type="button" id="register-cancel" value="Cancelar" />
                     </form>

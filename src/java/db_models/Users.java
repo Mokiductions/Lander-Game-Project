@@ -36,6 +36,13 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Users.findByPwd", query = "SELECT u FROM Users u WHERE u.pwd = :pwd")})
 public class Users implements Serializable {
 
+    @Column(name = "mail")
+    private String mail;
+    @Column(name = "active")
+    private Boolean active;
+    @Column(name = "act_code")
+    private String actCode;
+
     @OneToMany(mappedBy = "usrId")
     private List<Games> gamesList;
 
@@ -132,6 +139,30 @@ public class Users implements Serializable {
 
     public void setGamesList(List<Games> gamesList) {
         this.gamesList = gamesList;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public String getActCode() {
+        return actCode;
+    }
+
+    public void setActCode(String actCode) {
+        this.actCode = actCode;
     }
 
 }

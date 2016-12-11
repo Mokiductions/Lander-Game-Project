@@ -24,6 +24,10 @@
         <servlet-name>Register</servlet-name>
         <servlet-class>Servlets.Register</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Activate</servlet-name>
+        <servlet-class>Servlets.Activate</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
         <url-pattern>/Login</url-pattern>
@@ -47,6 +51,10 @@
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/Register</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Activate</servlet-name>
+        <url-pattern>/Activate</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

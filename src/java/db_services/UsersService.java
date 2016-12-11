@@ -28,7 +28,7 @@ public class UsersService {
         this.em = em;
     }
 
-    public void addUser(String usr, String pwd) {
+    public void addUser(String usr, String pwd, String mail, String actCode) {
         Users user = new Users();
         EntityTransaction trans = em.getTransaction();
         if (existsUser(usr)) {
@@ -38,6 +38,9 @@ public class UsersService {
             user.setUsr(usr);
             pwd = hashPassword(pwd);
             user.setPwd(pwd);
+            user.setMail(mail);
+            user.setActive(false);
+            user.setActCode(actCode);
             try {
                 trans.begin();
                 em.persist(user);
@@ -48,6 +51,22 @@ public class UsersService {
                 }
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void activateUser(Users user) {
+        EntityTransaction trans = em.getTransaction();
+        user.setActive(true);
+        user.setActCode("");
+        try {
+            trans.begin();
+            em.persist(user);
+            trans.commit();
+        } catch (Exception e) {
+            if (trans.isActive()) {
+                trans.rollback();
+            }
+            e.printStackTrace();
         }
     }
 

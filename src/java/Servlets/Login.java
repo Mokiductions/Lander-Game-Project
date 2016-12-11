@@ -9,7 +9,6 @@ import db_models.Users;
 import db_services.LoginsService;
 import db_services.UsersService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import static javax.persistence.Persistence.createEntityManagerFactory;
@@ -41,46 +40,46 @@ public class Login extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
         String answer;
-        try {
-            emf = createEntityManagerFactory("LanderProjectPU");
-            em = emf.createEntityManager();
+        emf = createEntityManagerFactory("LanderProjectPU");
+        em = emf.createEntityManager();
 
-            // Obtiene los datos de USR y PWD
-            String usr = request.getParameter("USR");
-            String pwd = request.getParameter("PWD");
+        // Obtiene los datos de USR y PWD
+        String usr = request.getParameter("USR");
+        String pwd = request.getParameter("PWD");
 
-            // Comprobar si existe en la Base de Datos
-            us = new UsersService(em);
-            ls = new LoginsService(em);
-            if (validLogin(usr, pwd)) {
-                answer = "1";
-                // Añade información sobre el inicio de sesión a la tabla de
-                // logins
-                addLoginInfo(usr);
-            } else {
-                answer = "0";
-            }
-            // Preparar respuesta para el JSP
-            response.setContentType("text/plain");
-            response.getWriter().print(answer);
-        } finally {
-            out.close();
+        // Comprobar si existe en la Base de Datos
+        us = new UsersService(em);
+        ls = new LoginsService(em);
+        if (validLogin(usr, pwd)) {
+            answer = "1";
+            // Añade información sobre el inicio de sesión a la tabla de
+            // logins
+            addLoginInfo(usr);
+        } else if (!isActiveUser(usr)) {
+            answer = "2";
+        } else {
+            answer = "0";
         }
+        // Preparar respuesta para el JSP
+        response.setContentType("text/plain");
+        response.getWriter().print(answer);
     }
-    
+
     private void addLoginInfo(String usr) {
         Users user = us.getUserByUsr(usr);
         ls.addLogin(user);
     }
-    
+
+    private boolean isActiveUser(String usr) {
+        Users user = us.getUserByUsr(usr);
+        return user.getActive();
+    }
+
     private boolean validLogin(String usr, String pwd) {
-        // Habría que hashear la contraseña entrante y compararla con la BD, 
-        // ya que allí se guardarán hasheadas.
         pwd = us.hashPassword(pwd);
         Users user = us.getUserByUsr(usr);
-        return pwd.equals(user.getPwd());
+        return pwd.equals(user.getPwd()) && isActiveUser(usr);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

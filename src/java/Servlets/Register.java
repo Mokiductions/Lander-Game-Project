@@ -7,8 +7,9 @@ package Servlets;
 
 import db_services.UsersService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
@@ -49,43 +50,45 @@ public class Register extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
         String answer;
-        try {
-            emf = createEntityManagerFactory("LanderProjectPU");
-            em = emf.createEntityManager();
-            us = new UsersService(em);
-            String usr = request.getParameter("USR");
-            String pwd = request.getParameter("PWD");
-            String mail = "ginesborrasm@gmail.com";
-            if (!us.existsUser(usr)) {
-                us.addUser(usr, pwd);
-                answer = "1";
-                activationLink = "http://localhost:8080/LanderProject/activation.jsp?USR=" 
-                        + usr + "&PWD=" + pwd + "&ACT=activationCode";
-                sendActivationMail(usr, mail);
-            } else {
-                answer = "0";
-            }
-            // Preparar respuesta para el JSP
-            response.setContentType("text/plain");
-            response.getWriter().print(answer);
-        } finally {
-            out.close();
+        emf = createEntityManagerFactory("LanderProjectPU");
+        em = emf.createEntityManager();
+        us = new UsersService(em);
+        String usr = request.getParameter("USR");
+        String pwd = request.getParameter("PWD");
+        String mail = request.getParameter("MAIL");
+        String actCode = generateActCode();
+        if (!us.existsUser(usr)) {
+            us.addUser(usr, pwd, mail, actCode);
+            answer = "1";
+            // Cambiar la URL 'localhost' por la dirección del servidor al subirlo.
+            activationLink = "http://localhost:8080/LanderProject/activation.jsp?USR="
+                    + usr + "&ACT=" + actCode;
+            sendActivationMail(usr, mail);
+        } else {
+            answer = "0";
         }
+        // Preparar respuesta para el JSP
+        response.setContentType("text/plain");
+        response.getWriter().print(answer);
     }
-    
+
+    private String generateActCode() {
+        SecureRandom random = new SecureRandom();
+        return new BigInteger(130, random).toString(32);
+    }
+
     private void sendActivationMail(String usr, String destination) {
         sender = new MailSender(username, password);
         sender.setDestination(destination);
         sender.setSubject("Confirmación de registro en Lander Game");
-        sender.setBody("¡Gracias por darse de alta en nuestro juego, " + usr +"!<br/><br/>"
+        sender.setBody("¡Gracias por darse de alta en nuestro juego, " + usr + "!<br/><br/>"
                 + "Su registro ha sido llevado a cabo correctamente, tan sólo "
                 + "necesita activar su cuenta para comenzar a jugar.<br/><br/>"
                 + "Para activar su cuenta haga click <a href=\"" + activationLink
                 + "\" target=\"_blank\">aquí</a>.<br/><br/>Ojo no estrelles la nave... "
                 + "Y que la fuerza te acompañe.");
-        
+
         try {
             // Envía el correo
             sender.send();

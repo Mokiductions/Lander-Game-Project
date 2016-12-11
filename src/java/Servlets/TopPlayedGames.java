@@ -5,12 +5,9 @@
  */
 package Servlets;
 
-import db_models.Games;
 import db_models.Users;
 import db_services.GamesService;
-import db_services.UsersService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -30,7 +27,7 @@ public class TopPlayedGames extends HttpServlet {
     private EntityManagerFactory emf;
     private GamesService gs;
     private List<Object[]> playedGames;
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,28 +40,32 @@ public class TopPlayedGames extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
         String answer;
-        try {
-            emf = createEntityManagerFactory("LanderProjectPU");
-            em = emf.createEntityManager();
-            gs = new GamesService(em);
-            playedGames = gs.getMostPlayed();
-            answer = "<ol>";
-            for (Object[] playedGame : playedGames) {
-                Users user = (Users) playedGame[0];
-                long played = (Long) playedGame[1];
-                answer += "<li>";
-                answer += user.getUsr() + " - " + played;
-                answer += "</li>";
+        emf = createEntityManagerFactory("LanderProjectPU");
+        em = emf.createEntityManager();
+        gs = new GamesService(em);
+        playedGames = gs.getMostPlayed();
+        answer = "<table class=\"data-table\">";
+        answer += "<tr><th></th><th>Usuario</th><th>Partidas</th></tr>";
+        int i = 1;
+        for (Object[] playedGame : playedGames) {
+            Users user = (Users) playedGame[0];
+            long played = (Long) playedGame[1];
+            if (i % 2 == 0) {
+                answer += "<tr class=\"table-row-even\">";
+            } else {
+                answer += "<tr>";
             }
-            answer += "</ol>";
-            // Preparar respuesta para el JSP
-            response.setContentType("text/html");
-            response.getWriter().print(answer);
-        } finally {
-            out.close();
+            answer += "<td class=\"table-cell-number\">" + i + "</td>";
+            answer += "<td class=\"table-cell-user\">" + user.getUsr() + "</td>";
+            answer += "<td class=\"table-cell-data\">" + played + "</td>";
+            answer += "</tr>";
+            i++;
         }
+        answer += "</table>";
+        // Preparar respuesta para el JSP
+        response.setContentType("text/html");
+        response.getWriter().print(answer);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
