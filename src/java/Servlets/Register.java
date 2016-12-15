@@ -16,6 +16,7 @@ import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import static javax.persistence.Persistence.createEntityManagerFactory;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +52,8 @@ public class Register extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String answer;
-        emf = createEntityManagerFactory("LanderProjectPU");
+        ServletContext ctx = getServletContext();
+        emf = (EntityManagerFactory) ctx.getAttribute("emf");
         em = emf.createEntityManager();
         us = new UsersService(em);
         String usr = request.getParameter("USR");

@@ -13,6 +13,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import static javax.persistence.Persistence.createEntityManagerFactory;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +43,8 @@ public class TopScores extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String answer;
+        ServletContext ctx = getServletContext();
+        emf = (EntityManagerFactory) ctx.getAttribute("emf");
         emf = createEntityManagerFactory("LanderProjectPU");
         em = emf.createEntityManager();
         gs = new GamesService(em);

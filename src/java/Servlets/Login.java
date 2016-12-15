@@ -11,7 +11,7 @@ import db_services.UsersService;
 import java.io.IOException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import static javax.persistence.Persistence.createEntityManagerFactory;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,29 +41,33 @@ public class Login extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String answer;
-        emf = createEntityManagerFactory("LanderProjectPU");
-        em = emf.createEntityManager();
+        try {
+            ServletContext ctx = getServletContext();
+            emf = (EntityManagerFactory) ctx.getAttribute("emf");
+            em = emf.createEntityManager();
 
-        // Obtiene los datos de USR y PWD
-        String usr = request.getParameter("USR");
-        String pwd = request.getParameter("PWD");
+            // Obtiene los datos de USR y PWD
+            String usr = request.getParameter("USR");
+            String pwd = request.getParameter("PWD");
 
-        // Comprobar si existe en la Base de Datos
-        us = new UsersService(em);
-        ls = new LoginsService(em);
-        if (validLogin(usr, pwd)) {
-            answer = "1";
-            // Añade información sobre el inicio de sesión a la tabla de
-            // logins
-            addLoginInfo(usr);
-        } else if (!isActiveUser(usr)) {
-            answer = "2";
-        } else {
-            answer = "0";
+            // Comprobar si existe en la Base de Datos
+            us = new UsersService(em);
+            ls = new LoginsService(em);
+            if (validLogin(usr, pwd)) {
+                answer = "1";
+                // Añade información sobre el inicio de sesión a la tabla de
+                // logins
+                addLoginInfo(usr);
+            } else if (!isActiveUser(usr)) {
+                answer = "2";
+            } else {
+                answer = "0";
+            }
+            // Preparar respuesta para el JSP
+            response.setContentType("text/plain");
+            response.getWriter().print(answer);
+        } catch (Exception e) {
         }
-        // Preparar respuesta para el JSP
-        response.setContentType("text/plain");
-        response.getWriter().print(answer);
     }
 
     private void addLoginInfo(String usr) {
